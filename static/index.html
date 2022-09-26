@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- fill this up later with meta-->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/css/iziToast.min.css" integrity="sha512-O03ntXoVqaGUTAeAmvQ2YSzkCvclZEcPQu1eqloPaHfJ5RuNGiS4l+3duaidD801P50J28EHyonCV06CUlTSag==" crossorigin="anonymous" referrerpolicy="no-referrer">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/izitoast/1.4.0/js/iziToast.min.js" integrity="sha512-Zq9o+E00xhhR/7vJ49mxFNJ0KQw1E1TMWkPTxrWcnpfEFDEXgUiwJHIKit93EW/XxE31HSI5GEOW06G6BF1AtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    </head>
+    <body class="text-gray-600 body-font">
+        <div class="flex h-screen">
+            <div class="m-auto">
+                <input type="url" id="url" placeholder="https://google.com" class="flex text-white bg-gray-500  py-2 px-8 hover:bg-gray-600 rounded text-sm">
+                </input>
+                <button class="flex mx-auto mt-3 text-white bg-pink-400 py-2 px-8 hover:bg-pink-500 rounded text-lg" id="submit">Shorten!</button>
+            </div>
+        </div>
+
+        <script>
+            const url = document.getElementById("url")
+
+            document.getElementById("submit").addEventListener("click", async () => {
+                if(!url || !url.value) return;
+
+                const req = await fetch("/api/v1/shorten", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        url: url.value
+                    })
+                })
+
+                let body;
+
+                try {
+                    body = await req.json();
+                } catch {
+                    // if statement below wil catch this
+                }
+
+                if(!body?.success || !req.ok) {
+                    iziToast.error({
+                        title: "Error",
+                        message: body?.message + " ("+req.status+")",
+                        position: "center",
+                        theme: "dark",
+                    });
+                } else {
+                    await navigator.clipboard.writeText("https://141.lv/" + body.url)
+
+                    iziToast.success({
+                        title: "Success",
+                        message: "Link sucessfully shortened! https://141.lv/" + body.url,
+                        timeout: 20000,
+                        position: "center",
+                    });
+                }
+            })
+        </script>
+    </body>
+</html>

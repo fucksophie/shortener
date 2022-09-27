@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <!-- fill this up later with meta-->
         <script src="https://cdn.tailwindcss.com"></script>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,7 +10,7 @@
     <body class="text-gray-600 body-font">
         <div class="flex h-screen">
             <div class="m-auto">
-                <input type="url" id="url" placeholder="https://google.com" class="flex text-white bg-gray-500  py-2 px-8 hover:bg-gray-600 rounded text-sm">
+                <input type="url" id="url" value="https://google.com" class="flex text-white bg-gray-500  py-2 px-8 hover:bg-gray-600 rounded text-sm">
                 </input>
                 <button class="flex mx-auto mt-3 text-white bg-pink-400 py-2 px-8 hover:bg-pink-500 rounded text-lg" id="submit">Shorten!</button>
             </div>
@@ -19,9 +18,25 @@
 
         <script>
             const url = document.getElementById("url")
+            let copiedUrl = "";
 
             document.getElementById("submit").addEventListener("click", async () => {
-                if(!url || !url.value) return;
+                
+                if(copiedUrl!=="") {
+                    await navigator.clipboard.writeText("https://141.lv/" + copiedUrl)
+
+                    return;
+                };
+
+                if(!url || !url.value) {
+                    iziToast.error({
+                        title: "Error",
+                        message: "Missing URL.",
+                        position: "center",
+                        theme: "dark",
+                    });
+                    return;
+                };
 
                 const req = await fetch("/api/v1/shorten", {
                     method: "POST",
@@ -49,11 +64,15 @@
                         theme: "dark",
                     });
                 } else {
+                    copiedUrl = body.url;
+
+                    document.getElementById("submit").innerText = "Copy!";
+                    
                     await navigator.clipboard.writeText("https://141.lv/" + body.url)
 
                     iziToast.success({
                         title: "Success",
-                        message: "Link sucessfully shortened! https://141.lv/" + body.url,
+                        message: "Link sucessfully shortened! (in Clipboard) https://141.lv/" + body.url,
                         timeout: 20000,
                         position: "center",
                     });

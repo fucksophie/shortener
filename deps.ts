@@ -5,7 +5,7 @@ import { Client } from "https://deno.land/x/postgres@v0.16.1/mod.ts";
 import { Ratelimit } from "./Ratelimit.ts";
 
 export const shortenRatelimit = new Ratelimit("shorten");
-export const client = new Client(Deno.env.get("POSTGRES_URL"));
+export const client = new Client(Deno.env.get("DATABASE_URL"));
 const banned: Record<string, boolean> = {};
 
 await shortenRatelimit.start();

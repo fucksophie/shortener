@@ -63,13 +63,13 @@ api.post('/api/v1/shorten', async (ctx, next) => {
         };
         return;
       }
+    } else {
+      ctx.response.status = Status.BadRequest;
+      ctx.response.body = {
+        message: "[short] does not match requirements!"
+      };
+      return;
     }
-  } else {
-    ctx.response.status = Status.BadRequest;
-    ctx.response.body = {
-      message: "[short] does not match requirements!"
-    };
-    return;
   }
 
   if(!short) short = crypto.randomUUID().slice(0, 8);

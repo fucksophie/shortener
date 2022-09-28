@@ -2,6 +2,8 @@ import { Application } from "./deps.ts";
 import { api, renderShort } from "./router.ts";
 
 const app = new Application()
+
+app.proxy = true;
 app.use(api.routes())
 app.use(api.allowedMethods())
 

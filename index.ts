@@ -4,8 +4,14 @@ import { api, renderShort } from "./router.ts";
 const app = new Application()
 
 app.proxy = true;
+
 app.use(api.routes())
 app.use(api.allowedMethods())
+
+app.addEventListener("error", (evt) => {
+  console.log("experienced error [APP]: " + evt.error);
+});
+
 const shit = new Router();
 
 shit.get("/s/:file?", async (context, next) => {

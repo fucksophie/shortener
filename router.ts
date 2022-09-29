@@ -54,9 +54,7 @@ api.post('/api/v1/shorten', async (ctx, next) => {
 
     if(json.short.match(/^[a-zA-Z0-9-_]{3,50}$/gm)) {
       const maybeExists = await client.queryObject(`SELECT * FROM urls WHERE shorturl = $URL LIMIT 1`, {url: json.short});
-      if(maybeExists.rowCount == 0) { 
-        short = json.short 
-      } else {
+      if(maybeExists.rowCount !== 0) { 
         ctx.response.status = Status.BadRequest;
         ctx.response.body = {
           message: "URL already exists!"
@@ -72,7 +70,13 @@ api.post('/api/v1/shorten', async (ctx, next) => {
     }
   }
 
-  if(!short) short = crypto.randomUUID().slice(0, 8);
+  if(!short) {
+    short = crypto.randomUUID().slice(0, 8);
+  
+    while((await client.queryObject(`SELECT * FROM urls WHERE shorturl = $URL LIMIT 1`, {url: short})).rowCount !== 0) {
+      short = crypto.randomUUID().slice(0, 8);
+    } 
+  }
 
   if(isValidHttpUrl(json?.url)) {
     const maybeExists = await client.queryObject(`SELECT * FROM urls WHERE url = $URL LIMIT 1`, {url: json.url});

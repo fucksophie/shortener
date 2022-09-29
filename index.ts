@@ -1,4 +1,4 @@
-import { Application } from "./deps.ts";
+import { Application, Router } from "./deps.ts";
 import { api, renderShort } from "./router.ts";
 
 const app = new Application()
@@ -6,15 +6,18 @@ const app = new Application()
 app.proxy = true;
 app.use(api.routes())
 app.use(api.allowedMethods())
+const shit = new Router();
 
-app.use(async (context, next) => {
-    const root = `${Deno.cwd()}/static`
+shit.get("/s/:file?", async (context, next) => {
     try {
-      await context.send({ root, index: "index.html" })
+      await context.send({ root: `${Deno.cwd()}/static`, path: context.params.file || "index.html"})
     } catch {
       await next()  
     }
 })
+
+app.use(shit.routes())
+app.use(shit.allowedMethods())
 
 app.use(renderShort)
 

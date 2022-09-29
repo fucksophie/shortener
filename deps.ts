@@ -25,7 +25,7 @@ if (
   console.log("Table does not exist. Creating!");
 
   await client.queryObject(`CREATE TABLE urls (
-      shortUrl TEXT PRIMARY KEY,
+      shortUrl TEXT,
       createdBy TEXT NOT NULL,
       createdAt TIMESTAMP NOT NULL,
       visitCount INTEGER NOT NULL,
